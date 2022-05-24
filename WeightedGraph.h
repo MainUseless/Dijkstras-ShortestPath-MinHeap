@@ -40,7 +40,7 @@ public:
     };
     //returns the number of neighbors of the vertex v 
     int numNeighbors(int v){
-        int count;
+        int count=0;
         for(int i=0;i<nVertices;i++){
             if(g[v][i]!=0)
                 count++;
@@ -80,15 +80,22 @@ public:
             distances[i].label=toChar(i);
         };
         distances[toIndex(startVertex)].cost=0;
+        prev[toIndex(startVertex)]=startVertex;
         m.buildMinHeap(distances,nVertices);
         while(m.getSize()>0){
             Node tempNode = m.extractMin();
             char tempLabel = tempNode.label;
-            int nn=numNeighbors(tempLabel);
+            int nn=numNeighbors(toIndex(tempLabel));
             int*arr=returnNeighbors(toIndex(tempLabel));
             for(int i=0;i<nn;i++){
-                if(arr[i])
-        }
+                int weight=getWeight(tempLabel,toChar(arr[i]))+tempNode.cost;
+                if(m.inHeap(toChar(arr[i]))&&weight<distances[arr[i]].cost){
+                    m.decreaseKey(toChar(arr[i]),weight);
+                    distances[arr[i]].cost=weight;
+                    prev[arr[i]]=tempNode.label;
+                }
+            }
+        }//gib bren kemol
 
     };
     //just prints the 2d array / matrix
