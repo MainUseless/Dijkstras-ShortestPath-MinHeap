@@ -10,11 +10,12 @@ class WeightedGraph
 { 
     int** g; 
     int nVertices;
-    //just used to get convert from char to index 
+    //used to get convert from char to corrisponding index 
     int toIndex(char c){
         c=tolower(c);
         return static_cast<int>(c)-static_cast<int>('a');
     }
+    //used to convert index to corrisponding char
     char toChar(int index){
         return 'a'+index;
     }
@@ -30,10 +31,9 @@ public:
     // returns the indices of the neighbors of the vertex v as an int array
     int* returnNeighbors(int v){
         int* arr=new int[numNeighbors(v)];
-        for(int i=0,j=0;i<nVertices;i++){
+        for(int i=0,k=0;i<nVertices;i++){
             if(g[v][i]!=0){
-                arr[j]=i;
-                j++;
+                arr[k++]=i;
             }
         }
         return arr;
@@ -67,38 +67,49 @@ public:
             y=toIndex(temp);
             obj>>weight;
             g[x][y]=weight;
-            g[y][x]=weight;
+            //for undirected graph
+            //g[y][x]=weight;
         }
     };
     //find the shortest path from the start vertex to all other vertices,
     //by filling the prev array and the distances array
     void dijkstra(char startVertex, char* prev, Node distances[]){
-        MinHeap m ;
-        int x=10000;
+        MinHeap m;
+        //~=infinity
+        int x=98765;
+        //initialize the distances array with labels and costs(infinity)
         for(int i=0 ; i<nVertices ; i++){
             distances[i].cost=x;
             distances[i].label=toChar(i);
         };
+
+        //sets start vertex cost to 0 and builds heap
         distances[toIndex(startVertex)].cost=0;
         prev[toIndex(startVertex)]=startVertex;
         m.buildMinHeap(distances,nVertices);
+
         while(m.getSize()>0){
-            Node tempNode = m.extractMin();
-            char tempLabel = tempNode.label;
-            int nn=numNeighbors(toIndex(tempLabel));
-            int*arr=returnNeighbors(toIndex(tempLabel));
-            for(int i=0;i<nn;i++){
-                int weight=getWeight(tempLabel,toChar(arr[i]))+tempNode.cost;
-                if(m.inHeap(toChar(arr[i]))&&weight<distances[arr[i]].cost){
-                    m.decreaseKey(toChar(arr[i]),weight);
-                    distances[arr[i]].cost=weight;
-                    prev[arr[i]]=tempNode.label;
+            //the min node in heap
+            Node minNode = m.extractMin();
+
+            //number of neighbours and neighbours array of min node
+            int NON=numNeighbors(toIndex(minNode.label));
+            int*nNodes=returnNeighbors(toIndex(minNode.label));
+
+            for(int i=0;i<NON;i++){
+                //new weight (accumilated)
+                int weight=getWeight(minNode.label,toChar(nNodes[i]))+minNode.cost;
+
+                //if in heap and weight in heap is > new weight
+                if(m.inHeap(toChar(nNodes[i])) && weight<distances[nNodes[i]].cost){
+                    m.decreaseKey(toChar(nNodes[i]),weight);
+                    distances[nNodes[i]].cost=weight;
+                    prev[nNodes[i]]=minNode.label;
                 }
             }
-        }//gib bren kemol
-
+        }
     };
-    //just prints the 2d array / matrix
+    //just prints the 2d array / matrix for testing
     void print(){
         for(int i=0 ; i<nVertices ; i++){
             for(int j=0 ; j<nVertices ; j++)
@@ -107,6 +118,5 @@ public:
         }
     }
 };
-
 
 #endif

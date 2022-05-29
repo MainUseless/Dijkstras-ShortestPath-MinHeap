@@ -1,15 +1,12 @@
 #include<iostream>
 #include"WeightedGraph.h"
 
+//Mostafa Hesham Allam 20206126 s1
+//Karim Amr Hamdy lialy 20206138 s1
+
 using namespace std;
 
 int main(){
-    //MinHeap m;
-    // Node arr[]={{'n',10},{'s',3},{'a',56},{'k',22},{'x',11},{'b',20}};
-    // m.buildMinHeap(arr,6);
-    // m.print();
-    // m.decreaseKey('a',2);
-    // m.print();
     WeightedGraph wg;
     ifstream infile("graph.txt");
     wg.loadGraphFromFile(infile);
